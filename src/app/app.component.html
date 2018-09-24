@@ -8,6 +8,10 @@
 
 
 <h2 *ngIf="isLoggedIn">User is logged in.</h2>
-<h2 *ngIf="!isLoggedIn">User is not logged in.</h2>
+
+<div *ngIf="!isLoggedIn">
+  <h2>Not logged in.</h2>
+  <button id="login-button" class="btn btn-primary" (click)="authenticate()">Log in with Spotify</button>
+</div>
 
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NgRedux } from '@angular-redux/store';
 import { IAppState } from '../../domain/store';
-import { access } from 'fs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +29,35 @@ export class AuthService {
     }
   }
 
+  public getImplicitGrantUrl (redirectUri: string) {
+    const scope = 'user-read-private, playlist-modify-public';
+
+    let url = 'https://accounts.spotify.com/authorize';
+    const state = this.generateRandomString(16);
+
+    url += '?response_type=token';
+    url += '&client_id=' + encodeURIComponent(environment.clientId);
+    url += '&scope=' + encodeURIComponent(scope);
+    url += '&redirect_uri=' + encodeURIComponent(redirectUri);
+    url += '&state=' + encodeURIComponent(state);
+
+    return url;
+  }
+
+  // Generates a random string containing numbers and letters for a given length
+  // This is used to protect against cross-site request forgery when authenticating with spotify
+  // See: https://developer.spotify.com/documentation/general/guides/authorization-guide/
+  private generateRandomString(length) {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (let i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+
+    return text;
+  }
+
   // Returns the hash parameters in the current url.
   private getHashParams(): any {
     const hashParams = {};
@@ -42,4 +71,5 @@ export class AuthService {
 
     return hashParams;
   }
+
 }
