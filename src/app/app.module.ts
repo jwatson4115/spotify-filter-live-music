@@ -6,6 +6,9 @@ import { AppComponent } from './app.component';
 import { NgRedux, NgReduxModule, DevToolsExtension } from '@angular-redux/store';
 import { rootReducer, INITIAL_STATE, IAppState } from './domain/store';
 
+// Services
+import { AuthService } from './services/auth/auth.service';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -14,7 +17,7 @@ import { rootReducer, INITIAL_STATE, IAppState } from './domain/store';
     BrowserModule,
     NgReduxModule,
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
