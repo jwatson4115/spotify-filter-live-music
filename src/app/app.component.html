@@ -20,16 +20,16 @@
     <div class="card text-left">
       <div class="card-body">
         <h5 class="card-title">Choose an artist to filter</h5>
-        <form>
+        <form [formGroup]="form">
           <div class="form-group">
             <label for="artistInput">Artist name</label>
-            <input type="email" class="form-control" id="artistInput" aria-describedby="artistHelp" placeholder="Enter artist">
+            <input type="text" formControlName="artist" class="form-control" id="artistInput" aria-describedby="artistHelp" placeholder="Enter artist">
           </div>
           <div class="form-group form-check">
             <input type="checkbox" class="form-check-input" id="demoCheck">
             <label class="form-check-label" for="demoCheck">Also filter demo tracks</label>
           </div>
-          <button type="submit" class="btn btn-secondary">Submit</button>
+          <button type="submit" class="btn btn-secondary" (click)="buildFilteredPlaylist()">Submit</button>
         </form>
       </div>
     </div>
