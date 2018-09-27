@@ -105,8 +105,8 @@ export class SpotifyService {
           uris: songArray
         }, options).pipe(
           map(res => res.json())
-        ).subscribe(response => {
-          this.ngRedux.dispatch({type: 'PLAYLIST_CREATE_SUCCESS'});
+        ).subscribe(() => {
+          this.ngRedux.dispatch({type: 'PLAYLIST_CREATE_SUCCESS', playlistId: playlistId});
         });
       });
   }

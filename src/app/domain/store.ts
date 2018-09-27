@@ -11,6 +11,7 @@ export interface IAppState {
   albumIds: string[];
   songs: Song[];
   userId: string;
+  playlistId: string;
 }
 
 export const INITIAL_STATE: IAppState = {
@@ -22,6 +23,7 @@ export const INITIAL_STATE: IAppState = {
   albumIds: [],
   songs: [],
   userId: null,
+  playlistId: null,
 };
 
 export function rootReducer(state: IAppState, action): IAppState {
@@ -51,7 +53,9 @@ export function rootReducer(state: IAppState, action): IAppState {
     case 'PLAYLIST_CREATE':
       return tassign(state, {buildState: BuildState.CREATING_PLAYLIST, userId: null});
     case 'PLAYLIST_CREATE_SUCCESS':
-      return tassign(state, {buildState: BuildState.CREATING_PLAYLIST_SUCCESS});
+      return tassign(state, {buildState: BuildState.CREATING_PLAYLIST_SUCCESS, playlistId: action.playlistId});
+    case 'BUILD_COMPLETE':
+      return tassign(state, {buildState: BuildState.COMPLETE});
   }
   return state;
 }

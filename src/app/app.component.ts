@@ -6,6 +6,7 @@ import { DOCUMENT } from '@angular/common';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { SpotifyService } from './services/spotify/spotify.service';
 import { BuildState } from './domain/build-state';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -15,17 +16,22 @@ import { BuildState } from './domain/build-state';
 export class AppComponent implements OnInit {
   title = 'spotify-filter-live-music';
   isLoggedIn = false;
+  buildState = BuildState.NOT_BUILDING;
+  buildStateComplete = BuildState.COMPLETE;
   form: FormGroup;
+  playlistUrl = '';
 
   constructor (
     private ngRedux: NgRedux<IAppState>,
     private authService: AuthService,
     @Inject(DOCUMENT) private document: any,
     formBuilder: FormBuilder,
-    private spotifyService: SpotifyService) {
+    private spotifyService: SpotifyService,
+    public sanitizer: DomSanitizer) {
 
     this.ngRedux.subscribe(() => {
       this.isLoggedIn = this.ngRedux.getState().isLoggedIn;
+      this.buildState = this.ngRedux.getState().buildState;
     });
 
     this.form = formBuilder.group({
@@ -62,6 +68,10 @@ export class AppComponent implements OnInit {
           break;
         case BuildState.FETCHING_USER_SUCCESS:
           this.spotifyService.createPlaylist(state.userId, state.songs);
+          break;
+        case BuildState.CREATING_PLAYLIST_SUCCESS:
+          this.playlistUrl = `https://open.spotify.com/embed/playlist/${state.playlistId}`;
+          this.ngRedux.dispatch({type: 'BUILD_COMPLETE'});
           break;
       }
     });

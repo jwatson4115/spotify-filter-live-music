@@ -9,6 +9,7 @@
 </header>
 
 <main role="main" class="inner cover">
+  
   <div *ngIf="!isLoggedIn">
     <h1 class="cover-heading">Filter live music on Spotify.</h1>
     <p class="lead">Log in with Spotify below to get a playlist of any artist with live and demo music filtered out.</p>
@@ -16,7 +17,8 @@
       <a href="#" class="btn btn-lg btn-secondary" (click)="authenticate()">Log In</a>
     </p>
   </div>
-  <div *ngIf="isLoggedIn">
+
+  <div *ngIf="isLoggedIn && (buildState !== buildStateComplete)">
     <div class="card text-left">
       <div class="card-body">
         <h5 class="card-title">Choose an artist to filter</h5>
@@ -34,6 +36,15 @@
       </div>
     </div>
   </div>
+
+  <div *ngIf="buildState == buildStateComplete">
+      <h5 class="text-left">Your new playlist</h5>
+
+      <div class="resp-container">
+        <iframe class="resp-iframe" [src]="sanitizer.bypassSecurityTrustResourceUrl(playlistUrl)" gesture="media" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+      </div>
+  </div>
+
 </main>
 
 <footer class="mastfoot mt-auto">
