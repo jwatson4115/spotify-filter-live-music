@@ -3,7 +3,7 @@ import { NgModule, isDevMode } from '@angular/core';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-
+import { CookieModule } from 'ngx-cookie';
 // Redux
 import { NgRedux, NgReduxModule, DevToolsExtension } from '@angular-redux/store';
 import { rootReducer, INITIAL_STATE, IAppState } from './domain/store';
@@ -22,6 +22,7 @@ import { SpotifyService } from './services/spotify/spotify.service';
     ReactiveFormsModule,
     FormsModule,
     HttpModule,
+    CookieModule.forRoot(),
   ],
   providers: [AuthService, SpotifyService],
   bootstrap: [AppComponent]

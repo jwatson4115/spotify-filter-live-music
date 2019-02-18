@@ -2,23 +2,26 @@ import { Injectable } from '@angular/core';
 import { NgRedux } from '@angular-redux/store';
 import { IAppState } from '../../domain/store';
 import { environment } from '../../../environments/environment';
+import { CookieService, CookieOptions } from 'ngx-cookie';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private _ngRedux: NgRedux<IAppState>) { }
+  constructor(
+    private _ngRedux: NgRedux<IAppState>,
+    private cookieService: CookieService) { }
 
   public checkAccessToken () {
     this._ngRedux.dispatch({type: 'ACCESS_TOKEN_FETCH'});
 
     const params = this.getHashParams();
     const accessToken = params.access_token;
-    let storedState = localStorage.getItem('access_token');
+    let storedState = this.cookieService.get('spotify-access-token');
 
     if (accessToken) {
-      localStorage.setItem('access_token', accessToken);
+      this.setCookie(accessToken);
       storedState = accessToken;
     }
 
@@ -70,6 +73,16 @@ export class AuthService {
     }
 
     return hashParams;
+  }
+
+  private setCookie (accessToken: string) {
+
+    // Set cookie expiry to just under 1 hour in future
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (1 * 60 * 57 * 1000)); // just under 1 hour (when access token expires).
+    const cookieOptions: CookieOptions = { expires: expires };
+
+    this.cookieService.put('spotify-access-token', accessToken, cookieOptions);
   }
 
 }

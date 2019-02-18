@@ -41,7 +41,10 @@
       <h5 class="text-left">Your new playlist</h5>
 
       <div class="resp-container">
-        <iframe class="resp-iframe" [src]="sanitizer.bypassSecurityTrustResourceUrl(playlistUrl)" gesture="media" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+        <iframe class="resp-iframe" 
+          [src]="sanitizer.bypassSecurityTrustResourceUrl(playlistUrl)" 
+          gesture="media" frameborder="0" allowtransparency="true" allow="encrypted-media">
+        </iframe>
       </div>
   </div>
 
