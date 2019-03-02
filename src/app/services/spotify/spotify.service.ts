@@ -4,6 +4,9 @@ import { NgRedux } from '@angular-redux/store';
 import { IAppState } from '../../domain/store';
 import { map } from 'rxjs/operators';
 import { Song } from '../../domain/song';
+import { Artist } from '../../domain/artist';
+import { Image } from '../../domain/image';
+
 const API_URL = 'https://api.spotify.com/v1';
 
 @Injectable({
@@ -12,6 +15,20 @@ const API_URL = 'https://api.spotify.com/v1';
 export class SpotifyService {
 
   constructor(private ngRedux: NgRedux<IAppState>, private http: Http) {
+  }
+
+  searchArtist(searchQuery: string) {
+    const options = this.getOptions();
+    this.ngRedux.dispatch({type: 'ARTIST_SEARCH_FETCH'});
+
+    this.http.get(`${API_URL}/search?q=${searchQuery}&type=artist`, options)
+      .pipe(
+        map(response => response.json())
+      ).subscribe(response => {
+        const artists = this.getArtistArray(response.artists.items);
+        this.ngRedux.dispatch({type: 'ARTIST_SEARCH_FETCH_SUCCESS', artists: artists});
+      }, error => {
+      });
   }
 
   loadArtist(searchQuery: string) {
@@ -140,5 +157,35 @@ export class SpotifyService {
     });
 
     return options;
+  }
+
+  private getArtistArray (items) {
+    const artists: Artist[] = [];
+
+    items.forEach(item => {
+
+      const images = this.getImagesArray(item.images);
+
+      artists.push({
+        name: item.name,
+        id: item.id,
+        images: images,
+      });
+    });
+
+    return artists;
+  }
+  private getImagesArray (images) {
+    const imageArray: Image[] = [];
+
+    images.forEach(image => {
+      imageArray.push({
+        width: image.width,
+        height: image.height,
+        url: image.url,
+      });
+    });
+
+    return imageArray;
   }
 }

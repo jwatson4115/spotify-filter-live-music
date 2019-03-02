@@ -1,9 +1,11 @@
 import { tassign } from 'tassign';
 import { BuildState } from './build-state';
 import { Song } from './song';
+import { Artist } from './artist';
 
 export interface IAppState {
   isLoggedIn: boolean;
+  isSearching: false;
   accessToken: string;
   isFetchingAccessToken: boolean;
   artistId: string;
@@ -12,11 +14,13 @@ export interface IAppState {
   songs: Song[];
   userId: string;
   playlistId: string;
+  searchResults: Artist[];
 }
 
 export const INITIAL_STATE: IAppState = {
   isLoggedIn: false,
   isFetchingAccessToken: false,
+  isSearching: false,
   accessToken: null,
   artistId: null,
   buildState: BuildState.NOT_BUILDING,
@@ -24,6 +28,7 @@ export const INITIAL_STATE: IAppState = {
   songs: [],
   userId: null,
   playlistId: null,
+  searchResults: [],
 };
 
 export function rootReducer(state: IAppState, action): IAppState {
@@ -34,6 +39,10 @@ export function rootReducer(state: IAppState, action): IAppState {
       return tassign(state, {isFetchingAccessToken: false, accessToken: action.accessToken, isLoggedIn: true});
     case 'ACCESS_TOKEN_NOT_FOUND':
       return tassign(state, {isFetchingAccessToken: false, accessToken: null, isLoggedIn: false});
+    case 'ARTIST_SEARCH_FETCH':
+      return tassign(state, {isSearching: true});
+    case 'ARTIST_SEARCH_FETCH_SUCCESS':
+      return tassign(state, {isSearching: false, searchResults: action.artists});
     case 'ARTIST_FETCH':
       return tassign(state, {buildState: BuildState.FETCHING_ARTIST, artistId: null});
     case 'ARTIST_FETCH_SUCCESS':

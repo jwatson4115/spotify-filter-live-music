@@ -76,4 +76,8 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
+  testArtistSearch() {
+    this.spotifyService.searchArtist('The Monkees');
+  }
 }
