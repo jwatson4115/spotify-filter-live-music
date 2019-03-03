@@ -1,0 +1,7 @@
+<div class="media mb-4">
+    <img class="mr-3 rounded-circle align-self-center" [src]="getThumbnailUrl(artist)" alt="Generic placeholder image">
+    <div class="media-body">
+      <h5>{{ artist.name }}</h5>
+      <button type="submit" class="btn btn-secondary" (click)="buildFilteredPlaylist(artist.id)">Submit</button>
+    </div>
+</div>

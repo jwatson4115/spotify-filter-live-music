@@ -11,10 +11,12 @@ import { rootReducer, INITIAL_STATE, IAppState } from './domain/store';
 // Services
 import { AuthService } from './services/auth/auth.service';
 import { SpotifyService } from './services/spotify/spotify.service';
+import { SearchResultComponent } from './search-result/search-result.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SearchResultComponent
   ],
   imports: [
     BrowserModule,

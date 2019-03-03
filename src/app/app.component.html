@@ -27,13 +27,16 @@
             <label for="artistInput">Artist name</label>
             <input type="text" formControlName="artist" class="form-control" id="artistInput" aria-describedby="artistHelp" placeholder="Enter artist">
           </div>
-          <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="demoCheck">
-            <label class="form-check-label" for="demoCheck">Also filter demo tracks</label>
-          </div>
-          <button type="submit" class="btn btn-secondary" (click)="buildFilteredPlaylist()">Submit</button>
-          <button type="submit" class="btn btn-secondary" (click)="testArtistSearch()">Test Artist</button>
         </form>
+
+        <div class="list-unstyled">
+
+          <app-search-result 
+            *ngFor="let artist of searchResults"
+            [artist]="artist">
+          </app-search-result>
+
+        </div>
       </div>
     </div>
   </div>
@@ -53,7 +56,7 @@
 
 <footer class="mastfoot mt-auto">
   <div class="inner">
-    <p>Copyright &copy; 2018 James Watson</p>
+    <p>Copyright &copy; 2019 James Watson</p>
   </div>
 </footer>
 

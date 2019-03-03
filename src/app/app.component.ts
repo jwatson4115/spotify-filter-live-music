@@ -7,6 +7,8 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { SpotifyService } from './services/spotify/spotify.service';
 import { BuildState } from './domain/build-state';
 import { DomSanitizer } from '@angular/platform-browser';
+import { debounceTime } from 'rxjs/operators';
+import { Artist } from './domain/artist';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +22,7 @@ export class AppComponent implements OnInit {
   buildStateComplete = BuildState.COMPLETE;
   form: FormGroup;
   playlistUrl = '';
+  searchResults: Artist[] = [];
 
   constructor (
     private ngRedux: NgRedux<IAppState>,
@@ -32,11 +35,22 @@ export class AppComponent implements OnInit {
     this.ngRedux.subscribe(() => {
       this.isLoggedIn = this.ngRedux.getState().isLoggedIn;
       this.buildState = this.ngRedux.getState().buildState;
+      this.searchResults = this.ngRedux.getState().searchResults;
     });
 
     this.form = formBuilder.group({
       artist: []
     });
+
+    const search = this.form.controls['artist'];
+
+    search.valueChanges
+      .pipe(debounceTime(500))
+      .subscribe( result =>
+        this.spotifyService.searchArtist(result)
+      );
+
+    this.buildFilteredPlaylist();
   }
 
   ngOnInit () {
@@ -50,9 +64,6 @@ export class AppComponent implements OnInit {
   }
 
   buildFilteredPlaylist() {
-    const artistSearchTerm = this.form.get('artist').value;
-    this.spotifyService.loadArtist(artistSearchTerm);
-
     this.ngRedux.subscribe(() => {
       const state = this.ngRedux.getState();
 
@@ -75,9 +86,5 @@ export class AppComponent implements OnInit {
           break;
       }
     });
-  }
-
-  testArtistSearch() {
-    this.spotifyService.searchArtist('The Monkees');
   }
 }

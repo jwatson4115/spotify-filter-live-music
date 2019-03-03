@@ -25,22 +25,9 @@ export class SpotifyService {
       .pipe(
         map(response => response.json())
       ).subscribe(response => {
-        const artists = this.getArtistArray(response.artists.items);
+        let artists = this.getArtistArray(response.artists.items);
+        artists = artists.slice(0, 5);
         this.ngRedux.dispatch({type: 'ARTIST_SEARCH_FETCH_SUCCESS', artists: artists});
-      }, error => {
-      });
-  }
-
-  loadArtist(searchQuery: string) {
-    const options = this.getOptions();
-    this.ngRedux.dispatch({type: 'ARTIST_FETCH'});
-
-    this.http.get(`${API_URL}/search?q=${searchQuery}&type=artist`, options)
-      .pipe(
-        map(response => response.json())
-      ).subscribe(response => {
-        const artistId = response.artists.items[0].id;
-        this.ngRedux.dispatch({type: 'ARTIST_FETCH_SUCCESS', artistId: artistId});
       }, error => {
       });
   }
