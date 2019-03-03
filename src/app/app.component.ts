@@ -9,6 +9,7 @@ import { BuildState } from './domain/build-state';
 import { DomSanitizer } from '@angular/platform-browser';
 import { debounceTime } from 'rxjs/operators';
 import { Artist } from './domain/artist';
+import { faSpinner, faMusic } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-root',
@@ -20,9 +21,13 @@ export class AppComponent implements OnInit {
   isLoggedIn = false;
   buildState = BuildState.NOT_BUILDING;
   buildStateComplete = BuildState.COMPLETE;
+  buildStateNotBuilding = BuildState.NOT_BUILDING;
+
   form: FormGroup;
   playlistUrl = '';
   searchResults: Artist[] = [];
+  faSpinner = faSpinner;
+  faMusic = faMusic;
 
   constructor (
     private ngRedux: NgRedux<IAppState>,
