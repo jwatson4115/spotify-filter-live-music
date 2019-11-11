@@ -6,6 +6,7 @@ import { Artist } from './artist';
 export interface IAppState {
   isLoggedIn: boolean;
   isSearching: false;
+  hasSearched: boolean;
   accessToken: string;
   isFetchingAccessToken: boolean;
   artistId: string;
@@ -21,6 +22,7 @@ export const INITIAL_STATE: IAppState = {
   isLoggedIn: false,
   isFetchingAccessToken: false,
   isSearching: false,
+  hasSearched: false,
   accessToken: null,
   artistId: null,
   buildState: BuildState.NOT_BUILDING,
@@ -42,7 +44,7 @@ export function rootReducer(state: IAppState, action): IAppState {
     case 'ARTIST_SEARCH_FETCH':
       return tassign(state, {isSearching: true});
     case 'ARTIST_SEARCH_FETCH_SUCCESS':
-      return tassign(state, {isSearching: false, searchResults: action.artists});
+      return tassign(state, {isSearching: false, hasSearched: true, searchResults: action.artists});
     case 'ARTIST_FETCH':
       return tassign(state, {buildState: BuildState.FETCHING_ARTIST, artistId: null});
     case 'ARTIST_FETCH_SUCCESS':

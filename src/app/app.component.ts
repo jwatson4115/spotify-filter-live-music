@@ -19,6 +19,10 @@ import { faSpinner, faMusic } from '@fortawesome/free-solid-svg-icons';
 export class AppComponent implements OnInit {
   title = 'spotify-filter-live-music';
   isLoggedIn = false;
+  isSearching = false;
+  noResults = false;
+  hasSearched = false;
+
   buildState = BuildState.NOT_BUILDING;
   buildStateComplete = BuildState.COMPLETE;
   buildStateNotBuilding = BuildState.NOT_BUILDING;
@@ -41,6 +45,9 @@ export class AppComponent implements OnInit {
       this.isLoggedIn = this.ngRedux.getState().isLoggedIn;
       this.buildState = this.ngRedux.getState().buildState;
       this.searchResults = this.ngRedux.getState().searchResults;
+      this.isSearching = this.ngRedux.getState().isSearching;
+      this.hasSearched = this.ngRedux.getState().hasSearched;
+      this.noResults = (this.ngRedux.getState().searchResults.length == 0 ? true : false);
     });
 
     this.form = formBuilder.group({
@@ -51,8 +58,11 @@ export class AppComponent implements OnInit {
 
     search.valueChanges
       .pipe(debounceTime(500))
-      .subscribe( result =>
-        this.spotifyService.searchArtist(result)
+      .subscribe( result => {
+        if (result != "") {
+          this.spotifyService.searchArtist(result);
+        }
+      }
       );
 
     this.buildFilteredPlaylist();

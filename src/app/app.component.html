@@ -37,10 +37,17 @@
 
         <div class="list-unstyled">
 
-          <app-search-result 
+          <fa-icon *ngIf="isSearching" [icon]="faSpinner" size="2x" [fixedWidth]="true" [pulse]="true"></fa-icon>
+
+          <div *ngIf="noResults && hasSearched && !isSearching">No results found.</div>
+
+          <div *ngIf="!isSearching">
+            <app-search-result 
             *ngFor="let artist of searchResults"
             [artist]="artist">
-          </app-search-result>
+            </app-search-result>
+          </div>
+          
 
         </div>
       </div>
