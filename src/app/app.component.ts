@@ -115,7 +115,7 @@ export class AppComponent implements OnInit {
           this.spotifyService.loadUser();
           break;
         case BuildState.FETCHING_USER_SUCCESS:
-          this.spotifyService.createPlaylist(state.userId, state.songs);
+          this.spotifyService.createPlaylist(state.userId, state.songs, state.artistName);
           break;
         case BuildState.CREATING_PLAYLIST_SUCCESS:
           this.playlistUrl = `https://open.spotify.com/embed/playlist/${state.playlistId}`;

@@ -27,7 +27,7 @@ export class SearchResultComponent implements OnInit {
     }
   }
 
-  buildFilteredPlaylist(artistId) {
-    this.ngRedux.dispatch({type: 'ARTIST_FETCH_SUCCESS', artistId: artistId});
+  buildFilteredPlaylist(artistId, artistName) {
+    this.ngRedux.dispatch({type: 'ARTIST_FETCH_SUCCESS', artistId: artistId, artistName: artistName});
   }
 }

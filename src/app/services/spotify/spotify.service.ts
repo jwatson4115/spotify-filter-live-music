@@ -95,19 +95,21 @@ export class SpotifyService {
       });
   }
 
-  createPlaylist(userId: string, songs: Song[]) {
+  createPlaylist(userId: string, songs: Song[], artistName) {
     const options = this.getOptions();
+    const playlistName = this.getPlaylistName(artistName);
 
     this.ngRedux.dispatch({type: 'PLAYLIST_CREATE'});
 
     this.http.post(`${API_URL}/users/${userId}/playlists`, {
-      name: 'test-playlist-6000'
+      name: playlistName
     }, options)
       .pipe(
         map(res => res.json())
       ).subscribe(response => {
         const playlistId = response.id;
         const songArray = this.getSongArray(songs);
+
         this.http.post(`${API_URL}/playlists/${playlistId}/tracks`, {
           uris: songArray
         }, options).pipe(
@@ -117,9 +119,18 @@ export class SpotifyService {
         }, error => {
           this.handleError(error);
         });
+        
       }, error => {
         this.handleError(error);
       });
+  }
+
+  private getPlaylistName (artistName) {
+    if (!artistName || artistName == "") {
+      return 'filtered playlist';
+    } else {
+      return artistName + ' Filtered';
+    }
   }
 
   private getSongArray (songs) {

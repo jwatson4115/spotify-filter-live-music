@@ -10,6 +10,7 @@ export interface IAppState {
   accessToken: string;
   isFetchingAccessToken: boolean;
   artistId: string;
+  artistName: string;
   buildState: BuildState;
   albumIds: string[];
   songs: Song[];
@@ -26,6 +27,7 @@ export const INITIAL_STATE: IAppState = {
   hasSearched: false,
   accessToken: null,
   artistId: null,
+  artistName: null,
   buildState: BuildState.NOT_BUILDING,
   albumIds: [],
   songs: [],
@@ -52,7 +54,7 @@ export function rootReducer(state: IAppState, action): IAppState {
     case 'ARTIST_FETCH':
       return tassign(state, {buildState: BuildState.FETCHING_ARTIST, artistId: null});
     case 'ARTIST_FETCH_SUCCESS':
-      return tassign(state, {buildState: BuildState.FETCHING_ARTIST_SUCCESS, artistId: action.artistId});
+      return tassign(state, {buildState: BuildState.FETCHING_ARTIST_SUCCESS, artistId: action.artistId, artistName: action.artistName});
     case 'ALBUMS_FETCH':
       return tassign(state, {buildState: BuildState.FETCHING_ALBUMS, albumIds: null});
     case 'ALBUMS_FETCH_SUCCESS':
