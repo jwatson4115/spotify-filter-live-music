@@ -29,6 +29,7 @@ export class SpotifyService {
         artists = artists.slice(0, 5);
         this.ngRedux.dispatch({type: 'ARTIST_SEARCH_FETCH_SUCCESS', artists: artists});
       }, error => {
+        this.handleError(error);
       });
   }
 
@@ -47,6 +48,7 @@ export class SpotifyService {
         });
         this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albumIds: albumIds});
       }, error => {
+        this.handleError(error);
       });
   }
 
@@ -74,6 +76,7 @@ export class SpotifyService {
 
         this.ngRedux.dispatch({type: 'SONGS_FETCH_SUCCESS', songs: songs});
       }, error => {
+        this.handleError(error);
       });
   }
 
@@ -88,6 +91,7 @@ export class SpotifyService {
       ).subscribe(response => {
         this.ngRedux.dispatch({type: 'USER_FETCH_SUCCESS', userId: response.id});
       }, error => {
+        this.handleError(error);
       });
   }
 
@@ -104,14 +108,17 @@ export class SpotifyService {
       ).subscribe(response => {
         const playlistId = response.id;
         const songArray = this.getSongArray(songs);
-
         this.http.post(`${API_URL}/playlists/${playlistId}/tracks`, {
           uris: songArray
         }, options).pipe(
           map(res => res.json())
         ).subscribe(() => {
           this.ngRedux.dispatch({type: 'PLAYLIST_CREATE_SUCCESS', playlistId: playlistId});
+        }, error => {
+          this.handleError(error);
         });
+      }, error => {
+        this.handleError(error);
       });
   }
 
@@ -174,5 +181,13 @@ export class SpotifyService {
     });
 
     return imageArray;
+  }
+
+  private handleError(error) {
+    if (error.status == 401) {
+      this.ngRedux.dispatch({type: 'ACCESS_TOKEN_EXPIRED'});
+    } else {
+      this.ngRedux.dispatch({type: 'UNKNOWN_ERROR'});
+    }
   }
 }

@@ -16,6 +16,7 @@ export interface IAppState {
   userId: string;
   playlistId: string;
   searchResults: Artist[];
+  unknownError: boolean;
 }
 
 export const INITIAL_STATE: IAppState = {
@@ -30,6 +31,7 @@ export const INITIAL_STATE: IAppState = {
   songs: [],
   userId: null,
   playlistId: null,
+  unknownError: false,
   searchResults: [],
 };
 
@@ -41,8 +43,10 @@ export function rootReducer(state: IAppState, action): IAppState {
       return tassign(state, {isFetchingAccessToken: false, accessToken: action.accessToken, isLoggedIn: true});
     case 'ACCESS_TOKEN_NOT_FOUND':
       return tassign(state, {isFetchingAccessToken: false, accessToken: null, isLoggedIn: false});
+    case 'ACCESS_TOKEN_EXPIRED':
+      return tassign(state, {isFetchingAccessToken: false, accessToken: null, isLoggedIn: false, hasSearched: false, isSearching: false});
     case 'ARTIST_SEARCH_FETCH':
-      return tassign(state, {isSearching: true});
+      return tassign(state, {isSearching: true, unknownError: false});
     case 'ARTIST_SEARCH_FETCH_SUCCESS':
       return tassign(state, {isSearching: false, hasSearched: true, searchResults: action.artists});
     case 'ARTIST_FETCH':
@@ -67,6 +71,8 @@ export function rootReducer(state: IAppState, action): IAppState {
       return tassign(state, {buildState: BuildState.CREATING_PLAYLIST_SUCCESS, playlistId: action.playlistId});
     case 'BUILD_COMPLETE':
       return tassign(state, {buildState: BuildState.COMPLETE});
+    case 'UNKNOWN_ERROR':
+      return tassign(state, {buildState: BuildState.NOT_BUILDING, unknownError: true, isFetchingAccessToken: false, hasSearched: false, isSearching: false, searchResults: null});
   }
   return state;
 }

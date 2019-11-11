@@ -31,11 +31,19 @@
         <form [formGroup]="form">
           <div class="form-group">
             <label for="artistInput">Artist name</label>
-            <input type="text" formControlName="artist" class="form-control" id="artistInput" aria-describedby="artistHelp" placeholder="Enter artist">
+
+            <div class="input-group">
+                <input type="text" (keypress)="searchKeyPressed($event.keyCode)" formControlName="artist" class="form-control" id="artistInput" aria-describedby="artistHelp" placeholder="Enter artist">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" (click)="handleSearch()" type="button">
+                        <fa-icon [icon]="faSearch"> </fa-icon>
+                    </button>
+                  </div>
+            </div>
           </div>
         </form>
-
-        <div class="list-unstyled">
+        
+        <div *ngIf="!unknownError" class="list-unstyled">
 
           <fa-icon *ngIf="isSearching" [icon]="faSpinner" size="2x" [fixedWidth]="true" [pulse]="true"></fa-icon>
 
@@ -47,9 +55,9 @@
             [artist]="artist">
             </app-search-result>
           </div>
-          
-
         </div>
+
+        <div *ngIf="unknownError">An unknown error occurred. Please try again.</div>
       </div>
     </div>
   </div> 
