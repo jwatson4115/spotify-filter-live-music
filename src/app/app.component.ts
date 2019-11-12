@@ -109,7 +109,7 @@ export class AppComponent implements OnInit {
           this.spotifyService.loadAlbums(state.artistId);
           break;
         case BuildState.FETCHING_ALBUMS_SUCCESS:
-          this.spotifyService.loadSongs(state.albumIds);
+          this.spotifyService.loadSongs(state.albums);
           break;
         case BuildState.FETCHING_SONGS_SUCCESS:
           this.spotifyService.loadUser();

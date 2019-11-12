@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { Song } from '../../domain/song';
 import { Artist } from '../../domain/artist';
 import { Image } from '../../domain/image';
+import { Album } from "src/app/domain/album";
 
 const API_URL = 'https://api.spotify.com/v1';
 
@@ -42,19 +43,26 @@ export class SpotifyService {
       .pipe(
         map(response => response.json())
       ).subscribe(response => {
-        const albumIds: string[] = [];
+        const albums: Album[] = [];
         response.items.forEach(item => {
-          albumIds.push(item.id);
+          
+          albums.push({
+            name: item.name,
+            id: item.id,
+          });
         });
-        this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albumIds: albumIds});
+        this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albums: albums});
       }, error => {
         this.handleError(error);
       });
   }
 
-  loadSongs(albumIds: string[]) {
+  loadSongs(albums: Album[]) {
+    
     const options = this.getOptions();
-    const albumIdList = albumIds.join();
+    albums = this.filterLiveAlbums(albums);
+    const albumIdList = albums.map(x => x.id).join();
+
     let songs: Song[] = [];
 
     this.ngRedux.dispatch({type: 'SONGS_FETCH'});
@@ -145,6 +153,10 @@ export class SpotifyService {
     });
 
     return songArray;
+  }
+
+  private filterLiveAlbums (albums: Album[]) {
+    return albums.filter(x => x.name.toLowerCase().indexOf('live') === -1);
   }
 
   private filterLiveSongs (songs: Song[]) {

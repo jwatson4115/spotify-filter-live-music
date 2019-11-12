@@ -2,6 +2,7 @@ import { tassign } from 'tassign';
 import { BuildState } from './build-state';
 import { Song } from './song';
 import { Artist } from './artist';
+import { Album } from "src/app/domain/album";
 
 export interface IAppState {
   isLoggedIn: boolean;
@@ -12,7 +13,7 @@ export interface IAppState {
   artistId: string;
   artistName: string;
   buildState: BuildState;
-  albumIds: string[];
+  albums: Album[];
   songs: Song[];
   userId: string;
   playlistId: string;
@@ -29,7 +30,7 @@ export const INITIAL_STATE: IAppState = {
   artistId: null,
   artistName: null,
   buildState: BuildState.NOT_BUILDING,
-  albumIds: [],
+  albums: [],
   songs: [],
   userId: null,
   playlistId: null,
@@ -56,9 +57,9 @@ export function rootReducer(state: IAppState, action): IAppState {
     case 'ARTIST_FETCH_SUCCESS':
       return tassign(state, {buildState: BuildState.FETCHING_ARTIST_SUCCESS, artistId: action.artistId, artistName: action.artistName});
     case 'ALBUMS_FETCH':
-      return tassign(state, {buildState: BuildState.FETCHING_ALBUMS, albumIds: null});
+      return tassign(state, {buildState: BuildState.FETCHING_ALBUMS, albums: null});
     case 'ALBUMS_FETCH_SUCCESS':
-      return tassign(state, {buildState: BuildState.FETCHING_ALBUMS_SUCCESS, albumIds: action.albumIds});
+      return tassign(state, {buildState: BuildState.FETCHING_ALBUMS_SUCCESS, albums: action.albums});
     case 'SONGS_FETCH':
       return tassign(state, {buildState: BuildState.FETCHING_SONGS, songs: null});
     case 'SONGS_FETCH_SUCCESS':
