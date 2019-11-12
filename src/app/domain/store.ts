@@ -15,6 +15,7 @@ export interface IAppState {
   buildState: BuildState;
   albums: Album[];
   songs: Song[];
+  songsToAdd: string[];
   userId: string;
   playlistId: string;
   searchResults: Artist[];
@@ -32,6 +33,7 @@ export const INITIAL_STATE: IAppState = {
   buildState: BuildState.NOT_BUILDING,
   albums: [],
   songs: [],
+  songsToAdd: [],
   userId: null,
   playlistId: null,
   unknownError: false,
@@ -69,9 +71,17 @@ export function rootReducer(state: IAppState, action): IAppState {
     case 'USER_FETCH_SUCCESS':
       return tassign(state, {buildState: BuildState.FETCHING_USER_SUCCESS, userId: action.userId});
     case 'PLAYLIST_CREATE':
-      return tassign(state, {buildState: BuildState.CREATING_PLAYLIST, userId: null});
+      return tassign(state, {buildState: BuildState.CREATING_PLAYLIST});
     case 'PLAYLIST_CREATE_SUCCESS':
       return tassign(state, {buildState: BuildState.CREATING_PLAYLIST_SUCCESS, playlistId: action.playlistId});
+    case 'PREP_SONG_BATCH':
+      return tassign(state, {buildState: BuildState.PREP_SONG_BATCH});
+    case 'PREP_SONG_BATCH_SUCCESS':
+      return tassign(state, {buildState: BuildState.PREP_SONG_BATCH_SUCCESS, songsToAdd: action.songsToAdd});  
+    case 'ADD_SONG_BATCH':
+      return tassign(state, {buildState: BuildState.ADD_SONG_BATCH});
+    case 'ADD_SONG_BATCH_SUCCESS':
+      return tassign(state, {buildState: BuildState.ADD_SONG_BATCH_SUCCESS, songsToAdd: action.songsToAdd});
     case 'BUILD_COMPLETE':
       return tassign(state, {buildState: BuildState.COMPLETE});
     case 'UNKNOWN_ERROR':

@@ -116,21 +116,33 @@ export class SpotifyService {
         map(res => res.json())
       ).subscribe(response => {
         const playlistId = response.id;
-        const songArray = this.getSongArray(songs);
-
-        this.http.post(`${API_URL}/playlists/${playlistId}/tracks`, {
-          uris: songArray
-        }, options).pipe(
-          map(res => res.json())
-        ).subscribe(() => {
-          this.ngRedux.dispatch({type: 'PLAYLIST_CREATE_SUCCESS', playlistId: playlistId});
-        }, error => {
-          this.handleError(error);
-        });
-        
+        this.ngRedux.dispatch({type: 'PLAYLIST_CREATE_SUCCESS', playlistId: playlistId});
       }, error => {
         this.handleError(error);
       });
+  }
+
+  prepSongsToAdd(songs: Song[]) {
+    this.ngRedux.dispatch({type: 'PREP_SONG_BATCH'});
+    const songArray = this.getSongArray(songs);
+    this.ngRedux.dispatch({type: 'PREP_SONG_BATCH_SUCCESS', songsToAdd: songArray});
+  }
+  
+  addSongBatch(songsToAdd: string[], playlistId: string) {
+    this.ngRedux.dispatch({type: 'ADD_SONG_BATCH'});
+
+    const options = this.getOptions();
+    const songBatch = songsToAdd.splice(0, 100);
+
+    this.http.post(`${API_URL}/playlists/${playlistId}/tracks`, {
+      uris: songBatch
+    }, options).pipe(
+      map(res => res.json())
+    ).subscribe(() => {
+      this.ngRedux.dispatch({type: 'ADD_SONG_BATCH_SUCCESS', songsToAdd: songsToAdd});
+    }, error => {
+      this.handleError(error);
+    });
   }
 
   private getPlaylistName (artistName) {
@@ -142,10 +154,6 @@ export class SpotifyService {
   }
 
   private getSongArray (songs) {
-    if (songs.length > 100) {
-      songs = songs.slice(0, 100);
-    }
-
     const songArray: string[] = [];
 
     songs.forEach(song => {

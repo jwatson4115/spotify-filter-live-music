@@ -119,7 +119,16 @@ export class AppComponent implements OnInit {
           break;
         case BuildState.CREATING_PLAYLIST_SUCCESS:
           this.playlistUrl = `https://open.spotify.com/embed/playlist/${state.playlistId}`;
-          this.ngRedux.dispatch({type: 'BUILD_COMPLETE'});
+          this.spotifyService.prepSongsToAdd(state.songs);
+          break;
+        case BuildState.PREP_SONG_BATCH_SUCCESS:
+          this.spotifyService.addSongBatch(state.songsToAdd, state.playlistId);
+        case BuildState.ADD_SONG_BATCH_SUCCESS:
+          if (state.songsToAdd && state.songsToAdd.length > 0) {
+            this.spotifyService.addSongBatch(state.songsToAdd, state.playlistId);
+          } else {
+            this.ngRedux.dispatch({type: 'BUILD_COMPLETE'});
+          }
           break;
       }
     });
