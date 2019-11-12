@@ -123,9 +123,11 @@ export class SpotifyService {
   }
 
   prepSongsToAdd(songs: Song[]) {
+    // console.log(songs);
     this.ngRedux.dispatch({type: 'PREP_SONG_BATCH'});
     const songArray = this.getSongArray(songs);
     this.ngRedux.dispatch({type: 'PREP_SONG_BATCH_SUCCESS', songsToAdd: songArray});
+    // console.log(songArray);
   }
   
   addSongBatch(songsToAdd: string[], playlistId: string) {
@@ -160,6 +162,7 @@ export class SpotifyService {
       songArray.push('spotify:track:' + song.id);
     });
 
+    console.log(songArray);
     return songArray;
   }
 
@@ -168,7 +171,21 @@ export class SpotifyService {
   }
 
   private filterLiveSongs (songs: Song[]) {
-    return songs.filter(x => x.name.toLowerCase().indexOf('live') === -1);
+    // Filter live in title
+    songs = songs.filter(x => x.name.toLowerCase().indexOf('live') === -1);
+    // Filter demo in title.
+    songs = songs.filter(x => x.name.toLowerCase().indexOf('demo') === -1);
+    // Filter instrumentals
+    songs = songs.filter(x => x.name.toLowerCase().search(/\- .*Instrumental?.*/) === -1);
+    // Filter mixes (e.g. "song name - 2019 Mix")
+    songs = songs.filter(x => x.name.toLowerCase().search(/\- .*mix/) === -1);
+    // Filter alternate takes (e.g. "song name - Take 7)
+    songs = songs.filter(x => x.name.toLowerCase().search(/\- .*take(s)?.*/) === -1);
+    songs = songs.filter(x => x.name.toLowerCase().search(/\(.*Take.*\)/) === -1);
+    songs = songs.filter(x => x.name.toLowerCase().search(/\- .*early.*version/) === -1);
+    songs = songs.filter(x => x.name.toLowerCase().search(/\- .*alternate/) === -1);
+
+    return songs;
   }
 
   private getOptions () {
