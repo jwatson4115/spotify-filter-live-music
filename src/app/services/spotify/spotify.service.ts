@@ -34,16 +34,22 @@ export class SpotifyService {
       });
   }
 
-  loadAlbums(artistId: string) {
+  // nextUrl: the url given by spotify to retrieve further albums
+  loadAlbums(artistId: string, albums: Album[] = [], nextUrl: string = null) {
     const options = this.getOptions();
 
-    this.ngRedux.dispatch({type: 'ALBUMS_FETCH'});
+    let url = `${API_URL}/artists/${artistId}/albums?include_groups=album&limit=50`;
 
-    this.http.get(`${API_URL}/artists/${artistId}/albums?include_groups=album`, options)
+    if (nextUrl) {
+      url = nextUrl;
+    } else {
+      this.ngRedux.dispatch({type: 'ALBUMS_FETCH'});
+    }
+
+    this.http.get(url, options)
       .pipe(
         map(response => response.json())
       ).subscribe(response => {
-        const albums: Album[] = [];
         response.items.forEach(item => {
           
           albums.push({
@@ -51,26 +57,36 @@ export class SpotifyService {
             id: item.id,
           });
         });
-        this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albums: albums});
+
+        if (response.next) {
+          this.loadAlbums(artistId, albums, response.next);
+        }
+        else {
+          this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albums: albums});
+        }
+
       }, error => {
         this.handleError(error);
       });
   }
 
-  loadSongs(albums: Album[]) {
-    
-    const options = this.getOptions();
+  loadSongs(albums: Album[], songs: Song[] = []) {
     albums = this.filterLiveAlbums(albums);
-    const albumIdList = albums.map(x => x.id).join();
+    let albumsToProcess = albums.splice(0,20);
 
-    let songs: Song[] = [];
+    const options = this.getOptions();
+    const albumIdList = albumsToProcess.map(x => x.id).join();
 
-    this.ngRedux.dispatch({type: 'SONGS_FETCH'});
-
+    if (!songs) {
+      this.ngRedux.dispatch({type: 'SONGS_FETCH'});
+    }
+    
     this.http.get(`${API_URL}/albums/?ids=${albumIdList}`, options)
       .pipe(
         map(response => response.json())
       ).subscribe(response => {
+
+
         response.albums.forEach(album => {
           album.tracks.items.forEach(item => {
             songs.push({
@@ -82,7 +98,11 @@ export class SpotifyService {
 
         songs = this.filterLiveSongs(songs);
 
-        this.ngRedux.dispatch({type: 'SONGS_FETCH_SUCCESS', songs: songs});
+        if (albums && albums.length > 0) {
+          this.loadSongs(albums, songs);
+        } else {
+          this.ngRedux.dispatch({type: 'SONGS_FETCH_SUCCESS', songs: songs});
+        }
       }, error => {
         this.handleError(error);
       });
@@ -123,11 +143,9 @@ export class SpotifyService {
   }
 
   prepSongsToAdd(songs: Song[]) {
-    // console.log(songs);
     this.ngRedux.dispatch({type: 'PREP_SONG_BATCH'});
     const songArray = this.getSongArray(songs);
     this.ngRedux.dispatch({type: 'PREP_SONG_BATCH_SUCCESS', songsToAdd: songArray});
-    // console.log(songArray);
   }
   
   addSongBatch(songsToAdd: string[], playlistId: string) {
@@ -162,7 +180,6 @@ export class SpotifyService {
       songArray.push('spotify:track:' + song.id);
     });
 
-    console.log(songArray);
     return songArray;
   }
 
@@ -175,6 +192,8 @@ export class SpotifyService {
     songs = songs.filter(x => x.name.toLowerCase().indexOf('live') === -1);
     // Filter demo in title.
     songs = songs.filter(x => x.name.toLowerCase().indexOf('demo') === -1);
+    // Filter remixes
+    songs = songs.filter(x => x.name.toLowerCase().indexOf('remix') === -1);
     // Filter instrumentals
     songs = songs.filter(x => x.name.toLowerCase().search(/\- .*Instrumental?.*/) === -1);
     // Filter mixes (e.g. "song name - 2019 Mix")

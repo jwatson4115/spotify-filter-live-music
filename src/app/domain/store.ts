@@ -14,6 +14,7 @@ export interface IAppState {
   artistName: string;
   buildState: BuildState;
   albums: Album[];
+  albumsToProcess: Album[];
   songs: Song[];
   songsToAdd: string[];
   userId: string;
@@ -32,6 +33,7 @@ export const INITIAL_STATE: IAppState = {
   artistName: null,
   buildState: BuildState.NOT_BUILDING,
   albums: [],
+  albumsToProcess: [],
   songs: [],
   songsToAdd: [],
   userId: null,
