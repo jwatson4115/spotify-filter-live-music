@@ -62,6 +62,9 @@ export class SpotifyService {
           this.loadAlbums(artistId, albums, response.next);
         }
         else {
+          albums = this.filterLiveAlbums(albums);
+          albums = this.removeDuplicateAlbums(albums);
+
           this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albums: albums});
         }
 
@@ -71,7 +74,6 @@ export class SpotifyService {
   }
 
   loadSongs(albums: Album[], songs: Song[] = []) {
-    albums = this.filterLiveAlbums(albums);
     let albumsToProcess = albums.splice(0,20);
 
     const options = this.getOptions();
@@ -165,6 +167,30 @@ export class SpotifyService {
     });
   }
 
+  private filterLiveAlbums (albums: Album[]) {
+    return albums.filter(x => x.name.toLowerCase().indexOf('live') === -1);
+  }
+
+  private removeDuplicateAlbums (albums: Album[]) {
+    let albumNames: string[] = []
+    
+    albums.forEach(album  => {
+      albumNames.push(album.name);
+    });
+
+    albumNames = albumNames.filter(function(elem, index, self) {
+      return index === self.indexOf(elem);
+    });
+
+    albumNames.forEach(albumName => {
+      albums = albums.filter(function(elem, index, self) {
+        return (elem.name != albumName || index === self.map(x => x.name).indexOf(albumName));
+      });
+    });
+
+    return albums;
+  }
+
   private getPlaylistName (artistName) {
     if (!artistName || artistName == "") {
       return 'filtered playlist';
@@ -181,10 +207,6 @@ export class SpotifyService {
     });
 
     return songArray;
-  }
-
-  private filterLiveAlbums (albums: Album[]) {
-    return albums.filter(x => x.name.toLowerCase().indexOf('live') === -1);
   }
 
   private filterLiveSongs (songs: Song[]) {
