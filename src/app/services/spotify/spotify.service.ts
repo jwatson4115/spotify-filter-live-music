@@ -128,11 +128,13 @@ export class SpotifyService {
   createPlaylist(userId: string, songs: Song[], artistName) {
     const options = this.getOptions();
     const playlistName = this.getPlaylistName(artistName);
+    const playlistDescription = this.getPlaylistDescription(artistName);
 
     this.ngRedux.dispatch({type: 'PLAYLIST_CREATE'});
 
     this.http.post(`${API_URL}/users/${userId}/playlists`, {
-      name: playlistName
+      name: playlistName,
+      description: playlistDescription,      
     }, options)
       .pipe(
         map(res => res.json())
@@ -195,7 +197,15 @@ export class SpotifyService {
     if (!artistName || artistName == "") {
       return 'filtered playlist';
     } else {
-      return artistName + ' Filtered';
+      return artistName + ' - No Live or Demo Music.';
+    }
+  }
+
+  private getPlaylistDescription (artistName) {
+    if (!artistName || artistName == "") {
+      return 'filtered playlist';
+    } else {
+      return artistName + ' - full discography with live and demo music filtered out. Created at ' + document.location.origin;
     }
   }
 

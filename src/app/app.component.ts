@@ -17,7 +17,6 @@ import { faSpinner, faMusic, faSearch } from '@fortawesome/free-solid-svg-icons'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'spotify-filter-live-music';
   isLoggedIn = false;
   isSearching = false;
   noResults = false;
