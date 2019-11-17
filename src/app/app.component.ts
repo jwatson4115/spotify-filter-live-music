@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   hasSearched = false;
   unknownError = false;
 
+  previousBuildState = BuildState.NOT_BUILDING;
   buildState = BuildState.NOT_BUILDING;
   buildStateComplete = BuildState.COMPLETE;
   buildStateNotBuilding = BuildState.NOT_BUILDING;
@@ -103,33 +104,37 @@ export class AppComponent implements OnInit {
     this.ngRedux.subscribe(() => {
       const state = this.ngRedux.getState();
 
-      switch (state.buildState) {
-        case BuildState.FETCHING_ARTIST_SUCCESS:
-          this.form.controls['artist'].reset();
-          this.spotifyService.loadAlbums(state.artistId);
-          break;
-        case BuildState.FETCHING_ALBUMS_SUCCESS:
-          this.spotifyService.loadSongs(state.albums);
-          break;
-        case BuildState.FETCHING_SONGS_SUCCESS:
-          this.spotifyService.loadUser();
-          break;
-        case BuildState.FETCHING_USER_SUCCESS:
-          this.spotifyService.createPlaylist(state.userId, state.songs, state.artistName);
-          break;
-        case BuildState.CREATING_PLAYLIST_SUCCESS:
-          this.playlistUrl = `https://open.spotify.com/embed/playlist/${state.playlistId}`;
-          this.spotifyService.prepSongsToAdd(state.songs);
-          break;
-        case BuildState.PREP_SONG_BATCH_SUCCESS:
-          this.spotifyService.addSongBatch(state.songsToAdd, state.playlistId);
-        case BuildState.ADD_SONG_BATCH_SUCCESS:
-          if (state.songsToAdd && state.songsToAdd.length > 0) {
+      if (this.previousBuildState != state.buildState) {
+        this.previousBuildState = state.buildState;
+        
+        switch (state.buildState) {
+          case BuildState.FETCHING_ARTIST_SUCCESS:
+            this.form.controls['artist'].reset();
+            this.spotifyService.loadAlbums(state.artistId);
+            break;
+          case BuildState.FETCHING_ALBUMS_SUCCESS:
+            this.spotifyService.loadSongs(state.albums);
+            break;
+          case BuildState.FETCHING_SONGS_SUCCESS:
+            this.spotifyService.loadUser();
+            break;
+          case BuildState.FETCHING_USER_SUCCESS:
+            this.spotifyService.createPlaylist(state.userId, state.songs, state.artistName);
+            break;
+          case BuildState.CREATING_PLAYLIST_SUCCESS:
+            this.playlistUrl = `https://open.spotify.com/embed/playlist/${state.playlistId}`;
+            this.spotifyService.prepSongsToAdd(state.songs);
+            break;
+          case BuildState.PREP_SONG_BATCH_SUCCESS:
             this.spotifyService.addSongBatch(state.songsToAdd, state.playlistId);
-          } else {
-            this.ngRedux.dispatch({type: 'BUILD_COMPLETE'});
-          }
-          break;
+          case BuildState.ADD_SONG_BATCH_SUCCESS:
+            if (state.songsToAdd && state.songsToAdd.length > 0) {
+              this.spotifyService.addSongBatch(state.songsToAdd, state.playlistId);
+            } else {
+              this.ngRedux.dispatch({type: 'BUILD_COMPLETE'});
+            }
+            break;
+        }
       }
     });
   }
