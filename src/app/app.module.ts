@@ -4,9 +4,13 @@ import { AppComponent } from './app.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { CookieModule } from 'ngx-cookie';
+
 // Redux
 import { NgRedux, NgReduxModule, DevToolsExtension } from '@angular-redux/store';
 import { rootReducer, INITIAL_STATE, IAppState } from './domain/store';
+
+// Font Awesome
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 // Services
 import { AuthService } from './services/auth/auth.service';
@@ -25,6 +29,7 @@ import { SearchResultComponent } from './search-result/search-result.component';
     FormsModule,
     HttpModule,
     CookieModule.forRoot(),
+    FontAwesomeModule,
   ],
   providers: [AuthService, SpotifyService],
   bootstrap: [AppComponent]

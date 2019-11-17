@@ -1,9 +1,9 @@
 <header class="masthead mb-auto">
   <div class="inner">
-    <h3 class="masthead-brand">Filter Spotify</h3>
+    <h3 class="masthead-brand">Filtered Spotify Playlists</h3>
     <nav class="nav nav-masthead justify-content-center">
-      <a class="nav-link active" href="#">Home</a>
-      <a class="nav-link" href="https://github.com/jwatson4115/spotify-filter-live-music">Source Code</a>
+      <a class="nav-link active" href="/">Home</a>
+      <a class="nav-link" href="https://github.com/jwatson4115/spotify-filter-live-music" target="_blank">Source Code</a>
     </nav>
   </div>
 </header>
@@ -11,43 +11,69 @@
 <main role="main" class="inner cover">
   
   <div *ngIf="!isLoggedIn">
-    <h1 class="cover-heading">Filter live music on Spotify.</h1>
+    <h1 class="cover-heading">    
+      <fa-icon class="music-icon pr-5" [icon]="faMusic" size="xs"></fa-icon>
+      Filter live music on Spotify.   
+      <fa-icon class="music-icon pl-5" [icon]="faMusic" size="xs"></fa-icon>
+    </h1>      
+    
     <p class="lead">Log in with Spotify below to get a playlist of any artist with live and demo music filtered out.</p>
+
     <p class="lead">
       <a href="#" class="btn btn-lg btn-secondary" (click)="authenticate()">Log In</a>
     </p>
   </div>
 
-  <div *ngIf="isLoggedIn && (buildState !== buildStateComplete)">
+  <div *ngIf="isLoggedIn && buildState == buildStateNotBuilding">
     <div class="card text-left">
       <div class="card-body">
         <h5 class="card-title">Choose an artist to filter</h5>
         <form [formGroup]="form">
           <div class="form-group">
             <label for="artistInput">Artist name</label>
-            <input type="text" formControlName="artist" class="form-control" id="artistInput" aria-describedby="artistHelp" placeholder="Enter artist">
+
+            <div class="input-group">
+                <input type="text" (keypress)="searchKeyPressed($event.keyCode)" formControlName="artist" class="form-control" id="artistInput" aria-describedby="artistHelp" placeholder="Enter artist">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" (click)="handleSearch()" type="button">
+                        <fa-icon [icon]="faSearch"> </fa-icon>
+                    </button>
+                  </div>
+            </div>
           </div>
         </form>
+        
+        <div *ngIf="!unknownError" class="list-unstyled">
 
-        <div class="list-unstyled">
+          <fa-icon *ngIf="isSearching" [icon]="faSpinner" size="2x" [fixedWidth]="true" [pulse]="true"></fa-icon>
 
-          <app-search-result 
+          <p *ngIf="noResults && hasSearched && !isSearching">No results found.</p>
+
+          <div *ngIf="!isSearching">
+            <app-search-result 
             *ngFor="let artist of searchResults"
             [artist]="artist">
-          </app-search-result>
-
+            </app-search-result>
+          </div>
         </div>
+        
+        <div class="error-message" *ngIf="unknownError">An unknown error occurred. Please try again.</div>
+        <div class="error-message" *ngIf="isEmptyPlaylist">No songs found for that artist. Please try another.</div>
       </div>
     </div>
-  </div>
+  </div> 
 
+  <div *ngIf="isLoggedIn && (buildState !== buildStateComplete && buildState !== buildStateNotBuilding)">
+    <h2>Building Playlist...</h2>  
+    <fa-icon [icon]="faSpinner" size="6x" [spin]="true"></fa-icon>
+  </div> 
+  
   <div *ngIf="buildState == buildStateComplete">
       <h5 class="text-left">Your new playlist</h5>
-
       <div class="resp-container">
         <iframe class="resp-iframe" 
           [src]="sanitizer.bypassSecurityTrustResourceUrl(playlistUrl)" 
-          gesture="media" frameborder="0" allowtransparency="true" allow="encrypted-media">
+          frameborder="0" allowtransparency="true" allow="encrypted-media">
         </iframe>
       </div>
   </div>
@@ -56,7 +82,7 @@
 
 <footer class="mastfoot mt-auto">
   <div class="inner">
-    <p>Copyright &copy; 2019 James Watson</p>
+    <p>Created by James Watson. <a href="https://github.com/jwatson4115/spotify-filter-live-music" target="_blank">Source Code</a></p>
   </div>
 </footer>
 
