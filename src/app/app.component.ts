@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
   noResults = false;
   hasSearched = false;
   unknownError = false;
+  isEmptyPlaylist = false;
 
   previousBuildState = BuildState.NOT_BUILDING;
   buildState = BuildState.NOT_BUILDING;
@@ -51,6 +52,7 @@ export class AppComponent implements OnInit {
       this.hasSearched = this.ngRedux.getState().hasSearched;
       this.noResults = (!this.ngRedux.getState().searchResults || this.ngRedux.getState().searchResults.length == 0 ? true : false);
       this.unknownError = this.ngRedux.getState().unknownError;
+      this.isEmptyPlaylist = this.ngRedux.getState().isEmptyPlaylist;
     });
 
     this.form = formBuilder.group({
@@ -62,7 +64,8 @@ export class AppComponent implements OnInit {
     search.valueChanges
       .pipe(debounceTime(500))
       .subscribe( result => {
-        if (result != "") {
+        if (result && result != '') {
+          console.log(result);
           this.spotifyService.searchArtist(result);
         }
       }

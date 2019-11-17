@@ -65,7 +65,12 @@ export class SpotifyService {
           albums = this.filterLiveAlbums(albums);
           albums = this.removeDuplicateAlbums(albums);
 
-          this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albums: albums});
+          if (albums.length == 0) {
+            this.handleEmptyResult();
+          } else {
+            this.ngRedux.dispatch({type: 'ALBUMS_FETCH_SUCCESS', albums: albums});
+          }
+          
         }
 
       }, error => {
@@ -103,7 +108,11 @@ export class SpotifyService {
         if (albums && albums.length > 0) {
           this.loadSongs(albums, songs);
         } else {
-          this.ngRedux.dispatch({type: 'SONGS_FETCH_SUCCESS', songs: songs});
+          if (songs.length == 0) {
+            this.handleEmptyResult();
+          } else {
+            this.ngRedux.dispatch({type: 'SONGS_FETCH_SUCCESS', songs: songs});
+          }
         }
       }, error => {
         this.handleError(error);
@@ -197,7 +206,7 @@ export class SpotifyService {
     if (!artistName || artistName == "") {
       return 'filtered playlist';
     } else {
-      return artistName + ' - No Live or Demo Music.';
+      return artistName + ' - No Live or Demo Tracks';
     }
   }
 
@@ -288,5 +297,9 @@ export class SpotifyService {
     } else {
       this.ngRedux.dispatch({type: 'UNKNOWN_ERROR'});
     }
+  }
+
+  private handleEmptyResult () {
+    this.ngRedux.dispatch({type: 'EMPTY_PLAYLIST_ERROR'});
   }
 }
